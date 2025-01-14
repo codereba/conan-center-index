@@ -67,8 +67,8 @@ class MSYS2Conan(ConanFile):
     def validate(self):
         if self.settings.os != "Windows":
             raise ConanInvalidConfiguration("Only Windows supported")
-        if self.settings.arch != "x86_64":
-            raise ConanInvalidConfiguration("Only Windows x64 supported")
+        if self.settings.arch != "x86_64" and self.settings.arch != "armv8":
+            raise ConanInvalidConfiguration("Only Windows x64 and arm64 supported")
 
     def source(self):
         get(self, **self.conan_data["sources"][self.version],
@@ -84,6 +84,12 @@ class MSYS2Conan(ConanFile):
                 self._kill_pacman()
                 self.run('bash -l -c "pacman --debug --noconfirm --ask 20 -Syuu"')  # Normal update
                 self._kill_pacman()
+                if self.settings.arch == "armv8":
+                    # https://www.msys2.org/wiki/arm64/
+                    self.run('bash -l -c "pacman --debug --noconfirm --ask 20 -S mingw-w64-clang-aarch64-clang"')
+                    self._kill_pacman()
+                    self.run('bash -l -c "pacman --debug --noconfirm --ask 20 -S mingw-w64-cross-mingwarm64-gcc"')
+                    self._kill_pacman()
                 self.run('bash -l -c "pacman --debug -Rc dash --noconfirm"')
             except ConanException:
                 self.run('bash -l -c "cat /var/log/pacman.log || echo nolog"')
