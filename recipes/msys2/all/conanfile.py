@@ -88,7 +88,8 @@ class MSYS2Conan(ConanFile):
                     # https://www.msys2.org/wiki/arm64/
                     self.run('bash -l -c "pacman --debug --noconfirm --ask 20 -S mingw-w64-clang-aarch64-clang"')
                     self._kill_pacman()
-                    self.run('bash -l -c "pacman --debug --noconfirm --ask 20 -S mingw-w64-cross-mingwarm64-gcc"')
+                    # https://packages.msys2.org/groups/mingw-w64-cross-toolchain
+                    self.run('bash -l -c "pacman --debug --noconfirm --ask 20 -S mingw-w64-cross-toolchain"')
                     self._kill_pacman()
                 self.run('bash -l -c "pacman --debug -Rc dash --noconfirm"')
             except ConanException:
